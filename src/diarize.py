@@ -18,6 +18,7 @@ from rich.console import Console
 
 from analyze import analyze_transcript
 from audio import diarize, display_results, truncate_name
+from metadata import generate_metadata, rebuild_index
 from profiles import list_blocks, list_profiles, load_block, load_profile, resolve_blocks
 from render import render_briefing
 from transcribe import get_whisper_model, transcribe_segments
@@ -103,6 +104,11 @@ def main():
         type=str,
         default=None,
         help="Override LLM model name (default depends on provider)",
+    )
+    parser.add_argument(
+        "--extract-entities",
+        action="store_true",
+        help="Extract entities and relationships for knowledge graph (requires analysis)",
     )
     parser.add_argument(
         "--list-profiles",
@@ -195,6 +201,7 @@ def main():
         console.print(f"[green]Saved transcript: {transcript_file}[/green]")
 
         # Analysis
+        blocks = []
         if not args.no_analyze and not args.no_transcribe:
             if args.profile:
                 profile = load_profile(args.profile)
@@ -224,6 +231,41 @@ def main():
                     blocks=blocks,
                     profile_name=profile_name,
                 )
+
+                # Entity extraction (optional, after analysis)
+                if args.extract_entities:
+                    from entities import extract_entities, save_entities
+
+                    entities = extract_entities(
+                        analysis=analysis,
+                        blocks=blocks,
+                        provider=args.provider,
+                        model=args.llm_model,
+                    )
+                    if entities:
+                        save_entities(output_dir, entities)
+
+        # Metadata (after all output files are written)
+        pipeline_config = {
+            "profile": args.profile if args.profile else None,
+            "blocks_used": [b["name"] for b in blocks],
+            "provider": args.provider if not args.no_analyze else None,
+            "model": args.llm_model if not args.no_analyze else None,
+            "whisper_model": args.model,
+            "context": args.context,
+            "language": args.language,
+            "translated": args.translate,
+        }
+        generate_metadata(
+            output_dir=output_dir,
+            short_name=short_name,
+            segments=segments,
+            audio_path=args.audio,
+            pipeline_config=pipeline_config,
+        )
+        console.print(f"[green]Saved metadata: {output_dir / 'metadata.json'}[/green]")
+        rebuild_index(args.output)
+        console.print(f"[green]Updated index: {args.output / 'index.json'}[/green]")
 
 
 if __name__ == "__main__":

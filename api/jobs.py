@@ -190,6 +190,7 @@ def _run_pipeline_sync(
     log("transcribe", "Saved diarization and transcript files", "done")  # type: ignore[operator]
 
     # Stage 3: Analysis (only if profile or blocks specified)
+    blocks = []
     if job.profile or job.blocks:
         from analyze import analyze_transcript
         from profiles import load_profile, resolve_blocks
@@ -231,6 +232,32 @@ def _run_pipeline_sync(
                 profile_name=profile_name,
             )
             log("render", "Briefing saved", "done")  # type: ignore[operator]
+
+    # Stage 5: Metadata
+    from metadata import generate_metadata, rebuild_index
+
+    pipeline_config = {
+        "profile": job.profile,
+        "blocks_used": [b["name"] for b in blocks],
+        "provider": job.provider,
+        "model": job.model,
+        "whisper_model": "large",
+        "context": job.context,
+        "language": None,
+        "translated": False,
+    }
+    generate_metadata(
+        output_dir=output_dir,
+        short_name=short_name,
+        segments=segments,
+        audio_path=audio_path,
+        pipeline_config=pipeline_config,
+    )
+    log("metadata", "Saved metadata.json", "done")  # type: ignore[operator]
+
+    if job.user_output_dir:
+        rebuild_index(Path(job.user_output_dir))
+        log("metadata", "Rebuilt index.json", "done")  # type: ignore[operator]
 
 
 async def save_upload(file: object) -> tuple[str, str]:
