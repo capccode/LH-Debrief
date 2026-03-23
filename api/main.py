@@ -99,29 +99,32 @@ async def update_settings(settings: SettingsUpdate) -> dict:
 
 @app.get("/browse-folder")
 async def browse_folder(current: str | None = None) -> dict:
-    """Open a native folder picker dialog via subprocess. Returns selected path or empty string."""
+    """Open a native macOS folder picker dialog. Returns selected path or empty string."""
     import asyncio
+    import platform
     import subprocess
 
     initial = current or str(Path.home())
 
-    # Run tkinter in a separate process — GUI must own the main thread
-    script = f"""
-import tkinter as tk
-from tkinter import filedialog
-root = tk.Tk()
-root.withdraw()
-root.attributes("-topmost", True)
-root.lift()
-root.focus_force()
-folder = filedialog.askdirectory(title="Select Output Folder", initialdir={initial!r}, mustexist=False)
-root.destroy()
-print(folder or "")
-"""
+    if platform.system() != "Darwin":
+        # Non-macOS: fall back to returning empty (user types path manually)
+        return {"path": ""}
+
+    # Use osascript (AppleScript) — always opens on top, proper macOS native dialog
+    script = (
+        f'set defaultFolder to POSIX file "{initial}" as alias\n'
+        'try\n'
+        '  set chosenFolder to choose folder with prompt "Select Output Folder" default location defaultFolder\n'
+        '  return POSIX path of chosenFolder\n'
+        'on error\n'
+        '  return ""\n'
+        'end try'
+    )
+
     try:
         proc = await asyncio.to_thread(
             subprocess.run,
-            [sys.executable, "-c", script],
+            ["osascript", "-e", script],
             capture_output=True,
             text=True,
             timeout=120,
