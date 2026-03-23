@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LH-Debrief Setup</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f14;
+      color: #e4e4e7;
+      padding: 48px 32px 32px;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .subtitle { color: #a1a1aa; font-size: 14px; margin-bottom: 28px; }
+    .section { margin-bottom: 20px; -webkit-app-region: no-drag; }
+    .section-title {
+      font-size: 13px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #71717a; margin-bottom: 8px;
+    }
+    label { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 0; font-size: 14px; }
+    input[type="radio"] { accent-color: #7c3aed; width: 16px; height: 16px; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 8px 12px; border: 1px solid #27272a;
+      border-radius: 6px; background: #18181b; color: #e4e4e7;
+      font-size: 14px; outline: none; -webkit-app-region: no-drag;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #7c3aed;
+    }
+    .field { margin-bottom: 12px; }
+    .field-label { font-size: 13px; color: #a1a1aa; margin-bottom: 4px; }
+    .field-hint { font-size: 12px; color: #52525b; margin-top: 4px; }
+    .status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; padding: 4px 0;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.green { background: #22c55e; }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #eab308; }
+    .api-section { display: none; margin-top: 12px; }
+    .api-section.visible { display: block; }
+    button {
+      width: 100%; padding: 10px; border: none; border-radius: 8px;
+      background: #7c3aed; color: white; font-size: 15px;
+      font-weight: 600; cursor: pointer; margin-top: 12px;
+      -webkit-app-region: no-drag;
+    }
+    button:hover { background: #6d28d9; }
+    button:disabled { background: #3f3f46; color: #71717a; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to LH-Debrief</h1>
+  <p class="subtitle">Session analysis for mental health professionals</p>
+
+  <div class="section">
+    <div class="section-title">Analysis Provider</div>
+    <label>
+      <input type="radio" name="provider" value="ollama" checked>
+      Local (Ollama) &mdash; private, no data leaves your computer
+    </label>
+    <label>
+      <input type="radio" name="provider" value="anthropic">
+      Anthropic Claude &mdash; cloud-based, requires API key
+    </label>
+  </div>
+
+  <div class="section">
+    <div id="ollama-status" class="status">
+      <span class="dot yellow"></span> Checking Ollama...
+    </div>
+  </div>
+
+  <div id="api-key-section" class="api-section">
+    <div class="field">
+      <div class="field-label">Anthropic API Key</div>
+      <input type="password" id="api-key" placeholder="sk-ant-...">
+      <div class="field-hint">Stored securely in macOS Keychain</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="field">
+      <div class="field-label">Hugging Face Token (required for speaker identification)</div>
+      <input type="password" id="hf-token" placeholder="hf_...">
+      <div class="field-hint">Get one at huggingface.co/settings/tokens &mdash; accept the pyannote/speaker-diarization-3.1 license first</div>
+    </div>
+  </div>
+
+  <button id="start-btn" disabled>Get Started</button>
+
+  <script>
+    const providerRadios = document.querySelectorAll('input[name="provider"]');
+    const apiSection = document.getElementById('api-key-section');
+    const apiKeyInput = document.getElementById('api-key');
+    const hfTokenInput = document.getElementById('hf-token');
+    const startBtn = document.getElementById('start-btn');
+    const ollamaStatus = document.getElementById('ollama-status');
+
+    let ollamaRunning = false;
+
+    // Toggle API key section visibility
+    providerRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const isAnthropic = e.target.value === 'anthropic';
+        apiSection.classList.toggle('visible', isAnthropic);
+        validateForm();
+      });
+    });
+
+    hfTokenInput.addEventListener('input', validateForm);
+    apiKeyInput.addEventListener('input', validateForm);
+
+    function getSelectedProvider() {
+      return document.querySelector('input[name="provider"]:checked').value;
+    }
+
+    function validateForm() {
+      const provider = getSelectedProvider();
+      const hfToken = hfTokenInput.value.trim();
+      const apiKey = apiKeyInput.value.trim();
+
+      let valid = hfToken.length > 0;
+      if (provider === 'anthropic') {
+        valid = valid && apiKey.length > 0;
+      }
+      startBtn.disabled = !valid;
+    }
+
+    // Check Ollama status
+    async function checkOllama() {
+      try {
+        const status = await window.electronAPI.getOllamaStatus();
+        ollamaRunning = status.running;
+        if (status.running) {
+          const count = status.models.length;
+          ollamaStatus.innerHTML = `<span class="dot green"></span> Ollama running (${count} model${count !== 1 ? 's' : ''} available)`;
+        } else {
+          ollamaStatus.innerHTML = `<span class="dot red"></span> Ollama not detected &mdash; install from ollama.com and run <code>ollama serve</code>`;
+        }
+      } catch {
+        ollamaStatus.innerHTML = `<span class="dot red"></span> Could not check Ollama status`;
+      }
+    }
+
+    checkOllama();
+
+    // Save settings and proceed
+    startBtn.addEventListener('click', async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = 'Starting...';
+
+      const settings = {
+        provider: getSelectedProvider(),
+        hfToken: hfTokenInput.value.trim(),
+        firstLaunch: false,
+      };
+
+      const apiKey = apiKeyInput.value.trim();
+      if (apiKey) settings.apiKey = apiKey;
+
+      try {
+        await window.electronAPI.saveSettings(settings);
+      } catch (err) {
+        startBtn.disabled = false;
+        startBtn.textContent = 'Get Started';
+        alert('Failed to save settings: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
