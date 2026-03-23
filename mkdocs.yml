@@ -1,0 +1,30 @@
+site_name: LH-Debrief
+site_description: Speaker diarization, transcription, and AI analysis for meeting recordings
+repo_url: https://github.com/capccode/LH-Debrief
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Profiles: profiles.md
+  - Blocks: blocks.md
+  - Providers: providers.md
+  - CLI Reference: cli-reference.md
+  - Contributing: contributing.md
