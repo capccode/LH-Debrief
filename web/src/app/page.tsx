@@ -109,8 +109,11 @@ export default function Home() {
 
   return (
     <div className="flex h-screen flex-col">
-      {/* Header */}
-      <header className="shrink-0 border-b border-slate-800 px-6 py-3">
+      {/* Header — draggable titlebar region for Electron */}
+      <header
+        className="shrink-0 border-b border-slate-800 px-6 py-3 text-center"
+        style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+      >
         <h1 className="text-lg font-semibold text-slate-100 tracking-tight">
           LH-Debrief
         </h1>
