@@ -1063,16 +1063,11 @@ dependencies = [
     { name = "torchaudio" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pyright" },
     { name = "pytest" },
     { name = "ruff" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pyright" },
 ]
 
 [package.metadata]
@@ -1081,18 +1076,18 @@ requires-dist = [
     { name = "commitizen", specifier = ">=4.13.9" },
     { name = "openai-whisper" },
     { name = "pyannote-audio", specifier = ">=3.1" },
-    { name = "pyright", marker = "extra == 'dev'" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "python-dotenv" },
     { name = "rich" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "torch" },
     { name = "torchaudio" },
 ]
-provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pyright", specifier = ">=1.1.407" }]
+dev = [
+    { name = "pyright", specifier = ">=1.1.407" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "lightning"
