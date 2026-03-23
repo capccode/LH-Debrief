@@ -113,12 +113,12 @@ async def browse_folder(current: str | None = None) -> dict:
     # Use osascript (AppleScript) — always opens on top, proper macOS native dialog
     script = (
         f'set defaultFolder to POSIX file "{initial}" as alias\n'
-        'try\n'
+        "try\n"
         '  set chosenFolder to choose folder with prompt "Select Output Folder" default location defaultFolder\n'
-        '  return POSIX path of chosenFolder\n'
-        'on error\n'
+        "  return POSIX path of chosenFolder\n"
+        "on error\n"
         '  return ""\n'
-        'end try'
+        "end try"
     )
 
     try:
