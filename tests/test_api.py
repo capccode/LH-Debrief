@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -335,3 +336,90 @@ class TestJobLogsWebSocket:
         with pytest.raises(Exception):
             with client.websocket_connect("/jobs/nonexistent/logs") as ws:
                 ws.receive_json()
+
+
+# --- GET /settings & PUT /settings ---
+
+
+class TestSettings:
+    def test_get_settings_returns_status(self, client):
+        resp = client.get("/settings")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "hf_token_set" in body
+        assert "anthropic_key_set" in body
+        assert "ollama_host" in body
+
+    @patch.dict(os.environ, {"HF_TOKEN": "tok123", "ANTHROPIC_API_KEY": "key456"})
+    def test_get_settings_shows_configured_when_env_set(self, client):
+        resp = client.get("/settings")
+        body = resp.json()
+        assert body["hf_token_set"] is True
+        assert body["anthropic_key_set"] is True
+
+    @patch.dict(os.environ, {"HF_TOKEN": "", "ANTHROPIC_API_KEY": ""}, clear=False)
+    def test_get_settings_shows_not_configured_when_env_empty(self, client):
+        # Remove the keys entirely so os.getenv returns None
+        os.environ.pop("HF_TOKEN", None)
+        os.environ.pop("ANTHROPIC_API_KEY", None)
+        resp = client.get("/settings")
+        body = resp.json()
+        assert body["hf_token_set"] is False
+        assert body["anthropic_key_set"] is False
+
+    @patch("main.ENV_PATH")
+    def test_put_settings_updates_env_vars(self, mock_env_path, client):
+        mock_env_path.exists.return_value = False
+        resp = client.put("/settings", json={"hf_token": "new-tok"})
+        assert resp.status_code == 200
+        assert os.getenv("HF_TOKEN") == "new-tok"
+        mock_env_path.write_text.assert_called_once()
+
+    @patch("main.ENV_PATH")
+    def test_put_settings_returns_ok(self, mock_env_path, client):
+        mock_env_path.exists.return_value = False
+        resp = client.put("/settings", json={"ollama_host": "http://myhost:11434"})
+        assert resp.json() == {"status": "ok"}
+
+
+# --- GET /browse-folder ---
+
+
+class TestBrowseFolder:
+    @patch("platform.system", return_value="Darwin")
+    @patch("asyncio.to_thread")
+    def test_browse_folder_returns_path(self, mock_to_thread, mock_platform, client):
+        mock_proc = MagicMock()
+        mock_proc.stdout = "/Users/test/folder\n"
+        mock_to_thread.return_value = mock_proc
+        resp = client.get("/browse-folder")
+        assert resp.status_code == 200
+        assert resp.json() == {"path": "/Users/test/folder"}
+
+    @patch("platform.system", return_value="Darwin")
+    @patch("asyncio.to_thread")
+    def test_browse_folder_returns_empty_on_cancel(self, mock_to_thread, mock_platform, client):
+        mock_proc = MagicMock()
+        mock_proc.stdout = ""
+        mock_to_thread.return_value = mock_proc
+        resp = client.get("/browse-folder")
+        assert resp.json() == {"path": ""}
+
+    @patch("platform.system", return_value="Darwin")
+    @patch("asyncio.to_thread", side_effect=Exception("dialog failed"))
+    def test_browse_folder_returns_empty_on_error(self, mock_to_thread, mock_platform, client):
+        resp = client.get("/browse-folder")
+        assert resp.json() == {"path": ""}
+
+    @patch("platform.system", return_value="Darwin")
+    @patch("asyncio.to_thread")
+    def test_browse_folder_passes_current_dir(self, mock_to_thread, mock_platform, client):
+        mock_proc = MagicMock()
+        mock_proc.stdout = "/tmp/test\n"
+        mock_to_thread.return_value = mock_proc
+        resp = client.get("/browse-folder?current=/tmp/test")
+        assert resp.status_code == 200
+        # asyncio.to_thread(subprocess.run, ["osascript", "-e", script], ...)
+        run_args = mock_to_thread.call_args[0]
+        osascript_cmd = run_args[1]  # ["osascript", "-e", script]
+        assert "/tmp/test" in osascript_cmd[2]
