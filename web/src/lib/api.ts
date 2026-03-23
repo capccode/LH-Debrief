@@ -27,6 +27,14 @@ export async function updateSettings(settings: {
   if (!res.ok) throw new Error("Failed to update settings");
 }
 
+export async function browseFolder(current?: string): Promise<string> {
+  const params = current ? `?current=${encodeURIComponent(current)}` : "";
+  const res = await fetch(`${API_BASE}/browse-folder${params}`);
+  if (!res.ok) return "";
+  const data = await res.json();
+  return data.path || "";
+}
+
 export async function fetchProfiles(): Promise<Profile[]> {
   const res = await fetch(`${API_BASE}/profiles`);
   if (!res.ok) throw new Error("Failed to fetch profiles");

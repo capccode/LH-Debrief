@@ -1,7 +1,40 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { browseFolder } from "@/lib/api";
+
+function BrowseButton({
+  currentPath,
+  onSelect,
+}: {
+  currentPath: string;
+  onSelect: (path: string) => void;
+}) {
+  const [picking, setPicking] = useState(false);
+
+  const handleBrowse = async () => {
+    setPicking(true);
+    try {
+      const path = await browseFolder(currentPath || undefined);
+      if (path) onSelect(path);
+    } finally {
+      setPicking(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleBrowse}
+      disabled={picking}
+      className="shrink-0 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:border-slate-500 hover:text-slate-100 disabled:opacity-50 transition-colors"
+      title="Browse for folder"
+    >
+      {picking ? "..." : "Browse"}
+    </button>
+  );
+}
 
 interface FileUploadProps {
   files: File[];
@@ -95,13 +128,19 @@ export default function FileUpload({
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-400">
           Output Folder
         </label>
-        <input
-          type="text"
-          value={outputFolder}
-          onChange={(e) => onOutputFolderChange(e.target.value)}
-          placeholder="~/output/"
-          className="w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-primary focus:outline-none"
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={outputFolder}
+            onChange={(e) => onOutputFolderChange(e.target.value)}
+            placeholder="~/output/"
+            className="flex-1 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-primary focus:outline-none"
+          />
+          <BrowseButton
+            currentPath={outputFolder}
+            onSelect={onOutputFolderChange}
+          />
+        </div>
       </div>
     </div>
   );

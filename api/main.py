@@ -94,6 +94,36 @@ async def update_settings(settings: SettingsUpdate) -> dict:
     return {"status": "ok"}
 
 
+# --- Folder picker ---
+
+
+@app.get("/browse-folder")
+async def browse_folder(current: str | None = None) -> dict:
+    """Open a native folder picker dialog. Returns selected path or empty string."""
+    import asyncio
+
+    def _pick() -> str:
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+
+            root = tk.Tk()
+            root.withdraw()
+            root.attributes("-topmost", True)
+            folder = filedialog.askdirectory(
+                title="Select Output Folder",
+                initialdir=current or str(Path.home()),
+                mustexist=False,
+            )
+            root.destroy()
+            return folder or ""
+        except Exception:
+            return ""
+
+    result = await asyncio.to_thread(_pick)
+    return {"path": result}
+
+
 # --- Profiles & Blocks ---
 
 
