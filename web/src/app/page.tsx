@@ -82,15 +82,25 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append("file", selectedFiles[0]);
-    if (selectedProfile) formData.append("profile", selectedProfile.id);
 
-    const allBlocks = [...profileBlocks, ...selectedBlocks];
-    allBlocks.forEach((b) => formData.append("blocks", b));
+    if (selectedProfile) {
+      // Profile mode: send profile name + any extra blocks as add_blocks
+      formData.append("profile", selectedProfile.id);
+      if (selectedBlocks.length > 0) {
+        formData.append("add_blocks", selectedBlocks.join(","));
+      }
+    } else {
+      // Direct blocks mode: send blocks list
+      const allBlocks = [...selectedBlocks];
+      if (allBlocks.length > 0) {
+        formData.append("blocks", allBlocks.join(","));
+      }
+    }
 
     formData.append("provider", provider);
     if (model) formData.append("model", model);
     if (context) formData.append("context", context);
-    if (outputFolder) formData.append("output_folder", outputFolder);
+    if (outputFolder) formData.append("output_dir", outputFolder);
 
     try {
       const { job_id } = await createJob(formData);
