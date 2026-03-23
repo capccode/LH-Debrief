@@ -43,6 +43,7 @@ The `audio` argument is required for all commands except `--list-profiles` and `
 | `--blocks NAME [...]` | Use specific blocks directly, without a profile. Mutually exclusive with `--profile`. |
 | `-c, --context TEXT` | Per-run context appended to profile context (e.g., "RSI pharma regulatory meeting") |
 | `--no-analyze` | Skip AI analysis entirely |
+| `--extract-entities` | Extract entities and relationships for knowledge graph (requires analysis) |
 
 ### Provider
 

@@ -88,9 +88,13 @@ diarize.py (CLI orchestrator)
 
 ## Output Files
 
+Output is written to `output/YYYY-MM-DD/short-name/`.
+
 | File | Content |
 |------|---------|
-| `diarization_*.json` | Raw segments: start, end, speaker, text |
-| `transcript_*.txt` | Human-readable timestamped transcript |
-| `briefing_*.md` | Rendered analysis briefing (section order from profile) |
-| `analysis_*.json` | Raw LLM analysis JSON |
+| `diarization.json` | Raw segments: start, end, speaker, text |
+| `transcript.txt` | Human-readable timestamped transcript |
+| `briefing.md` | Rendered analysis briefing (section order from profile) |
+| `analysis.json` | Raw LLM analysis JSON |
+| `metadata.json` | Session metadata for RAG/KG ingestion |
+| `entities.json` | Extracted entities and relationships (opt-in via `--extract-entities`) |
