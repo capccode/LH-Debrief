@@ -43,6 +43,10 @@ diarize.py (orchestrator)
 
 **analyze.py** (`src/analyze.py:34-134`): Sends transcript to Claude, returns `MeetingAnalysis` TypedDict with executive_summary, decisions, action_items, key_concepts, open_questions, follow_ups. The `save_briefing()` function formats this as markdown.
 
+## Git Conventions
+
+- Do NOT add `Co-Authored-By` lines to commit messages
+
 ## Key Implementation Details
 
 - NumPy 2.0 and PyTorch 2.6+ compatibility patches at top of `diarize.py`
