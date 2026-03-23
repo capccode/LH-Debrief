@@ -34,7 +34,7 @@ def render_briefing(
     total_duration = max(seg["end"] for seg in segments) if segments else 0
     speakers = set(seg["speaker"] for seg in segments)
 
-    briefing_file = output_dir / f"briefing_{short_name}.md"
+    briefing_file = output_dir / "briefing.md"
 
     with open(briefing_file, "w", encoding="utf-8") as f:
         f.write(f"# Session Briefing: {short_name}\n\n")
@@ -81,7 +81,7 @@ def render_briefing(
     console.print(f"[green]Saved briefing: {briefing_file}[/green]")
 
     # Save raw analysis JSON
-    analysis_file = output_dir / f"analysis_{short_name}.json"
+    analysis_file = output_dir / "analysis.json"
     with open(analysis_file, "w", encoding="utf-8") as f:
         json.dump(analysis, f, indent=2, ensure_ascii=False)
     console.print(f"[green]Saved analysis: {analysis_file}[/green]")

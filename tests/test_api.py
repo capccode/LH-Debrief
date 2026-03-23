@@ -223,11 +223,11 @@ class TestJobOutput:
         async def _setup():
             job = await store.get_job(job_id)
             job.output_dir = tmp_path
-            (tmp_path / "briefing_test.md").write_text("# Test Briefing")
+            (tmp_path / "briefing.md").write_text("# Test Briefing")
 
         asyncio.get_event_loop().run_until_complete(_setup())
 
-        resp = client.get(f"/jobs/{job_id}/output/briefing_test.md")
+        resp = client.get(f"/jobs/{job_id}/output/briefing.md")
         assert resp.status_code == 200
         assert resp.headers["content-type"] == "text/markdown; charset=utf-8"
         assert "Test Briefing" in resp.text

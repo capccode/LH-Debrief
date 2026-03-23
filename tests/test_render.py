@@ -26,21 +26,21 @@ class TestRenderBriefing:
         blocks = [_make_block("summary", "Summary")]
         analysis = {"summary": "A test summary."}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        assert (tmp_path / "briefing_test.md").exists()
-        assert (tmp_path / "analysis_test.json").exists()
+        assert (tmp_path / "briefing.md").exists()
+        assert (tmp_path / "analysis.json").exists()
 
     def test_string_value_renders_as_paragraph(self, tmp_path):
         blocks = [_make_block("summary", "Summary")]
         analysis = {"summary": "This is a paragraph."}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        content = (tmp_path / "briefing_test.md").read_text()
+        content = (tmp_path / "briefing.md").read_text()
         assert "This is a paragraph." in content
 
     def test_list_of_strings_renders_as_bullets(self, tmp_path):
         blocks = [_make_block("items", "Items")]
         analysis = {"items": ["First", "Second", "Third"]}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        content = (tmp_path / "briefing_test.md").read_text()
+        content = (tmp_path / "briefing.md").read_text()
         assert "- First" in content
         assert "- Second" in content
         assert "- Third" in content
@@ -49,7 +49,7 @@ class TestRenderBriefing:
         blocks = [_make_block("tasks", "Tasks")]
         analysis = {"tasks": [{"owner": "Alice", "task": "Review PR"}]}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        content = (tmp_path / "briefing_test.md").read_text()
+        content = (tmp_path / "briefing.md").read_text()
         assert "| Owner | Task |" in content
         assert "| Alice | Review PR |" in content
 
@@ -66,20 +66,20 @@ class TestRenderBriefing:
         blocks = [_make_block("summary", "Summary")]
         analysis = {"summary": "text"}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks, profile_name="Business")
-        content = (tmp_path / "briefing_test.md").read_text()
+        content = (tmp_path / "briefing.md").read_text()
         assert "**Profile:** Business" in content
 
     def test_no_profile_name_in_header(self, tmp_path):
         blocks = [_make_block("summary", "Summary")]
         analysis = {"summary": "text"}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        content = (tmp_path / "briefing_test.md").read_text()
+        content = (tmp_path / "briefing.md").read_text()
         assert "Profile:" not in content
 
     def test_analysis_json_is_valid(self, tmp_path):
         blocks = [_make_block("summary", "Summary")]
         analysis = {"summary": "text", "extra": [1, 2, 3]}
         render_briefing(tmp_path, "test", MOCK_SEGMENTS, analysis, blocks)
-        with open(tmp_path / "analysis_test.json") as f:
+        with open(tmp_path / "analysis.json") as f:
             loaded = json.load(f)
         assert loaded == analysis

@@ -10,6 +10,7 @@ Usage:
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -173,18 +174,19 @@ def main():
     # Save output
     if args.output:
         short_name = truncate_name(args.audio.stem)
-        output_dir = args.output / short_name
+        date_prefix = date.today().isoformat()
+        output_dir = args.output / date_prefix / short_name
         output_dir.mkdir(parents=True, exist_ok=True)
         console.print(f"[dim]Output folder: {output_dir}[/dim]")
 
         # Save JSON
-        output_file = output_dir / f"diarization_{short_name}.json"
+        output_file = output_dir / "diarization.json"
         with open(output_file, "w") as f:
             json.dump(segments, f, indent=2, ensure_ascii=False)
         console.print(f"\n[green]Saved JSON: {output_file}[/green]")
 
         # Save readable transcript
-        transcript_file = output_dir / f"transcript_{short_name}.txt"
+        transcript_file = output_dir / "transcript.txt"
         with open(transcript_file, "w", encoding="utf-8") as f:
             for seg in segments:
                 text = seg.get("text", "")

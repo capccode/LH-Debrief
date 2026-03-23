@@ -166,18 +166,21 @@ def _run_pipeline_sync(
     # Resolve output directory
     short_name = truncate_name(audio_path.stem)
     if job.user_output_dir:
-        output_dir = Path(job.user_output_dir) / short_name
+        from datetime import date
+
+        date_prefix = date.today().isoformat()
+        output_dir = Path(job.user_output_dir) / date_prefix / short_name
     else:
         output_dir = job.upload_dir / "output" / short_name
     output_dir.mkdir(parents=True, exist_ok=True)
     job.output_dir = output_dir
 
     # Save base outputs (diarization JSON + transcript)
-    diar_file = output_dir / f"diarization_{short_name}.json"
+    diar_file = output_dir / "diarization.json"
     with open(diar_file, "w") as f:
         json.dump(segments, f, indent=2, ensure_ascii=False)
 
-    transcript_file = output_dir / f"transcript_{short_name}.txt"
+    transcript_file = output_dir / "transcript.txt"
     with open(transcript_file, "w", encoding="utf-8") as f:
         for seg in segments:
             text = seg.get("text", "")
