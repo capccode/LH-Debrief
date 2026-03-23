@@ -52,6 +52,7 @@ See [Getting Started](getting-started.md) for full setup instructions.
 
 ## Documentation
 
+- **[Quickstart](quickstart.md)** — CLI, API, or Desktop in 60 seconds
 - **[Getting Started](getting-started.md)** — installation, configuration, first run
 - **[Profiles](profiles.md)** — using and creating analysis profiles
 - **[Blocks](blocks.md)** — understanding and creating analysis blocks

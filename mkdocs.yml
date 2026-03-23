@@ -24,6 +24,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Quickstart: quickstart.md
   - Getting Started: getting-started.md
   - Profiles: profiles.md
   - Blocks: blocks.md
