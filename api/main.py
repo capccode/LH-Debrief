@@ -99,29 +99,36 @@ async def update_settings(settings: SettingsUpdate) -> dict:
 
 @app.get("/browse-folder")
 async def browse_folder(current: str | None = None) -> dict:
-    """Open a native folder picker dialog. Returns selected path or empty string."""
+    """Open a native folder picker dialog via subprocess. Returns selected path or empty string."""
     import asyncio
+    import subprocess
 
-    def _pick() -> str:
-        try:
-            import tkinter as tk
-            from tkinter import filedialog
+    initial = current or str(Path.home())
 
-            root = tk.Tk()
-            root.withdraw()
-            root.attributes("-topmost", True)
-            folder = filedialog.askdirectory(
-                title="Select Output Folder",
-                initialdir=current or str(Path.home()),
-                mustexist=False,
-            )
-            root.destroy()
-            return folder or ""
-        except Exception:
-            return ""
-
-    result = await asyncio.to_thread(_pick)
-    return {"path": result}
+    # Run tkinter in a separate process — GUI must own the main thread
+    script = f"""
+import tkinter as tk
+from tkinter import filedialog
+root = tk.Tk()
+root.withdraw()
+root.attributes("-topmost", True)
+root.lift()
+root.focus_force()
+folder = filedialog.askdirectory(title="Select Output Folder", initialdir={initial!r}, mustexist=False)
+root.destroy()
+print(folder or "")
+"""
+    try:
+        proc = await asyncio.to_thread(
+            subprocess.run,
+            [sys.executable, "-c", script],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        return {"path": proc.stdout.strip()}
+    except Exception:
+        return {"path": ""}
 
 
 # --- Profiles & Blocks ---
