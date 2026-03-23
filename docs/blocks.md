@@ -1,7 +1,5 @@
 # Blocks
 
-<!-- TODO: Fill in as block system is implemented -->
-
 ## What is a block?
 
 A block is one analysis dimension — a TOML file that defines a prompt snippet and expected JSON output. Profiles assemble blocks into a complete analysis.

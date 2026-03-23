@@ -1,7 +1,5 @@
 # Profiles
 
-<!-- TODO: Fill in as profile system is implemented -->
-
 ## What is a profile?
 
 A profile is a TOML file that defines an analysis lens — which blocks to activate and how to frame the analysis.

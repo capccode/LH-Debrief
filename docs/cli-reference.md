@@ -1,7 +1,5 @@
 # CLI Reference
 
-<!-- TODO: Update as new flags are implemented -->
-
 ## Usage
 
 ```bash

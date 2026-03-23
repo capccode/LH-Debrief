@@ -1,7 +1,5 @@
 # Providers
 
-<!-- TODO: Fill in as provider system is implemented -->
-
 ## Overview
 
 LH-Debrief supports two LLM providers for the analysis step. Provider selection is independent of profile selection.

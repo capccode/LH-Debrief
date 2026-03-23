@@ -1,7 +1,5 @@
 # Getting Started
 
-<!-- TODO: Fill in as features are implemented -->
-
 ## Prerequisites
 
 - Python 3.12+
@@ -10,7 +8,11 @@
 
 ## Installation
 
-<!-- TODO: Add install instructions -->
+```bash
+uv sync                      # install all dependencies
+# or
+uv pip install -e ".[dev]"   # editable install with dev tools
+```
 
 ## Configuration
 
