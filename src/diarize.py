@@ -9,23 +9,30 @@ Usage:
 
 # Suppress torchcodec warnings (we bypass it with torchaudio)
 import warnings
+
 warnings.filterwarnings("ignore", message=".*torchcodec.*")
 warnings.filterwarnings("ignore", message=".*torchaudio.*load_with_torchcodec.*")
 
 # NumPy 2.0 compatibility fix for pyannote.audio
 import numpy as np
-if not hasattr(np, 'NaN'):
+
+if not hasattr(np, "NaN"):
     np.NaN = np.nan
-if not hasattr(np, 'NAN'):
+if not hasattr(np, "NAN"):
     np.NAN = np.nan
 
 # PyTorch 2.6+ compatibility fix - allow pyannote model loading
 import os
 import torch
+
 _original_torch_load = torch.load
+
+
 def _patched_torch_load(*args, **kwargs):
-    kwargs['weights_only'] = False  # Force override
+    kwargs["weights_only"] = False  # Force override
     return _original_torch_load(*args, **kwargs)
+
+
 torch.load = _patched_torch_load
 
 import argparse
@@ -53,7 +60,7 @@ def truncate_name(name: str, max_length: int = 15) -> str:
 
     # Convert to kebab-case
     name = re.sub(r"[^\w\s-]", "", name)  # remove special chars
-    name = re.sub(r"[\s_]+", "-", name)   # spaces/underscores to hyphens
+    name = re.sub(r"[\s_]+", "-", name)  # spaces/underscores to hyphens
     name = name.lower().strip("-")
 
     if len(name) <= max_length:
@@ -65,6 +72,7 @@ def truncate_name(name: str, max_length: int = 15) -> str:
         truncated = truncated.rsplit("-", 1)[0]
 
     return truncated.strip("-")
+
 
 import torchaudio
 import whisper
@@ -80,6 +88,7 @@ class WhisperSegment(TypedDict):
     start: float
     end: float
     text: str
+
 
 # Load .env from workspace root
 WORKSPACE_ROOT = Path(__file__).parent.parent.parent.parent
@@ -109,12 +118,17 @@ def convert_to_wav(audio_path: Path) -> Path:
     try:
         subprocess.run(
             [
-                "ffmpeg", "-y",  # Overwrite output
-                "-i", str(audio_path),
+                "ffmpeg",
+                "-y",  # Overwrite output
+                "-i",
+                str(audio_path),
                 "-vn",  # No video
-                "-acodec", "pcm_s16le",  # PCM 16-bit
-                "-ar", "16000",  # 16kHz sample rate
-                "-ac", "1",  # Mono
+                "-acodec",
+                "pcm_s16le",  # PCM 16-bit
+                "-ar",
+                "16000",  # 16kHz sample rate
+                "-ac",
+                "1",  # Mono
                 str(wav_path),
             ],
             check=True,
@@ -133,7 +147,9 @@ def get_pipeline() -> Pipeline:
     if not hf_token:
         console.print("[red]Error: HF_TOKEN not found in .env file[/red]")
         console.print("1. Get token from: https://huggingface.co/settings/tokens")
-        console.print("2. Accept license at: https://huggingface.co/pyannote/speaker-diarization-3.1")
+        console.print(
+            "2. Accept license at: https://huggingface.co/pyannote/speaker-diarization-3.1"
+        )
         console.print("3. Create .env file with: HF_TOKEN=hf_your_token")
         raise SystemExit(1)
 
@@ -147,7 +163,9 @@ def get_pipeline() -> Pipeline:
     )
 
     if pipeline is None:
-        console.print("[red]Error: Failed to load pipeline. Check your token and model access.[/red]")
+        console.print(
+            "[red]Error: Failed to load pipeline. Check your token and model access.[/red]"
+        )
         raise SystemExit(1)
 
     # Use best available device: CUDA → MPS → CPU
@@ -259,11 +277,13 @@ def diarize(audio_path: Path, num_speakers: int | None = None) -> tuple[list[dic
     # Convert to list of segments
     segments = []
     for turn, _, speaker in diarization.itertracks(yield_label=True):
-        segments.append({
-            "start": round(turn.start, 2),
-            "end": round(turn.end, 2),
-            "speaker": speaker,
-        })
+        segments.append(
+            {
+                "start": round(turn.start, 2),
+                "end": round(turn.end, 2),
+                "speaker": speaker,
+            }
+        )
 
     return segments, wav_path
 
@@ -297,7 +317,7 @@ def display_results(segments: list[dict], show_text: bool = True) -> None:
 
     console.print("\n[bold]Speaker Summary:[/bold]")
     for speaker, total_time in sorted(speakers.items()):
-        console.print(f"  {speaker}: {total_time:.1f}s ({total_time/60:.1f}min)")
+        console.print(f"  {speaker}: {total_time:.1f}s ({total_time / 60:.1f}min)")
 
 
 def main():
@@ -308,7 +328,8 @@ def main():
     parser.add_argument("--output", "-o", type=Path, help="Output directory")
     parser.add_argument("--speakers", "-n", type=int, help="Known number of speakers")
     parser.add_argument(
-        "--model", "-m",
+        "--model",
+        "-m",
         default="large",
         choices=["tiny", "base", "small", "medium", "large", "turbo"],
         help="Whisper model size (default: large)",
@@ -324,7 +345,8 @@ def main():
         help="Skip Claude AI analysis (default: analyze is ON)",
     )
     parser.add_argument(
-        "--context", "-c",
+        "--context",
+        "-c",
         type=str,
         default=None,
         help="Domain context to improve analysis (e.g., 'RSI pharma regulatory meeting')",
@@ -335,7 +357,8 @@ def main():
         help="Translate foreign language audio to English (instead of transcribing in original language)",
     )
     parser.add_argument(
-        "--language", "-l",
+        "--language",
+        "-l",
         type=str,
         default=None,
         help="Source language code (e.g., 'ja' for Japanese, 'es' for Spanish). Auto-detected if not specified.",
@@ -353,7 +376,9 @@ def main():
     if not args.no_transcribe:
         whisper_model = get_whisper_model(args.model)
         segments = transcribe_segments(
-            wav_path, segments, whisper_model,
+            wav_path,
+            segments,
+            whisper_model,
             language=args.language,
             translate=args.translate,
         )

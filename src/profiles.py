@@ -15,9 +15,7 @@ def load_block(name: str) -> dict:
     path = BLOCKS_DIR / f"{name}.toml"
     if not path.exists():
         available = ", ".join(sorted(list_blocks()))
-        raise FileNotFoundError(
-            f"Block '{name}' not found in {BLOCKS_DIR}. Available: {available}"
-        )
+        raise FileNotFoundError(f"Block '{name}' not found in {BLOCKS_DIR}. Available: {available}")
     with open(path, "rb") as f:
         return tomllib.load(f)
 
@@ -37,7 +35,11 @@ def load_profile(name: str) -> dict:
         return tomllib.load(f)
 
 
-def resolve_blocks(profile: dict | None = None, add_blocks: list[str] | None = None, block_names: list[str] | None = None) -> list[dict]:
+def resolve_blocks(
+    profile: dict | None = None,
+    add_blocks: list[str] | None = None,
+    block_names: list[str] | None = None,
+) -> list[dict]:
     """Resolve and return ordered list of block dicts.
 
     Args:
