@@ -57,4 +57,7 @@ See [Getting Started](getting-started.md) for full setup instructions.
 - **[Blocks](blocks.md)** — understanding and creating analysis blocks
 - **[Providers](providers.md)** — Anthropic Claude and Ollama setup
 - **[CLI Reference](cli-reference.md)** — all flags and usage examples
+- **[API Reference](api-reference.md)** — REST + WebSocket API for programmatic access
+- **[Deployment](deployment.md)** — local dev, Tailscale, AWS, and desktop app setup
+- **[Desktop App](desktop.md)** — Electron wrapper for click-to-run experience
 - **[Contributing](contributing.md)** — how to add blocks, profiles, providers, or features

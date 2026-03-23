@@ -29,4 +29,7 @@ nav:
   - Blocks: blocks.md
   - Providers: providers.md
   - CLI Reference: cli-reference.md
+  - API Reference: api-reference.md
+  - Deployment: deployment.md
+  - Desktop App: desktop.md
   - Contributing: contributing.md
