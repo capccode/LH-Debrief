@@ -1,0 +1,28 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment variables
+.env
+
+# Model cache
+.cache/
+
+# Meeting intel inputs (large audio/video files)
+tools/meeting-intel/input/
+*.wav
+*.mp3
+*.mp4
+*.m4a
+*.webm
+*.mkv
+
+# Qdrant local storage
+qdrant_storage/

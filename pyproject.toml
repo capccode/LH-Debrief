@@ -1,0 +1,26 @@
+[project]
+name = "lh-debrief"
+version = "0.1.0"
+description = "Speaker diarization, transcription, and AI analysis for meeting recordings"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyannote-audio>=3.1",
+    "openai-whisper",
+    "torch",
+    "torchaudio",
+    "python-dotenv",
+    "rich",
+    "anthropic>=0.75.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "pyright"]
+
+[tool.ruff]
+line-length = 100
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.407",
+]
