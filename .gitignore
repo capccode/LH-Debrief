@@ -12,17 +12,25 @@ wheels/
 # Environment variables
 .env
 
+# Tool caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+
 # Model cache
 .cache/
 
-# Meeting intel inputs (large audio/video files)
-tools/meeting-intel/input/
+# Audio/video files (large)
 *.wav
 *.mp3
 *.mp4
 *.m4a
 *.webm
 *.mkv
+
+# Output files
+output/
 
 # Qdrant local storage
 qdrant_storage/
