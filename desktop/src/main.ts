@@ -23,7 +23,9 @@ import { checkOllama } from "./ollama.js";
 
 let mainWindow: BrowserWindow | null = null;
 let fastApiProcess: ChildProcess | null = null;
+let nextJsProcess: ChildProcess | null = null;
 let fastApiPort = 8000;
+let nextJsPort = 3000;
 
 // ---------------------------------------------------------------------------
 // Resource / path helpers
@@ -162,6 +164,40 @@ function killChildProcess(child: ChildProcess | null): Promise<void> {
       resolve();
     }
   });
+}
+
+function spawnNextJs(port: number): ChildProcess {
+  const resourcePath = getResourcePath();
+  const webDir = nodePath.join(resourcePath, "web");
+
+  const child = spawn(
+    "npx",
+    ["next", "dev", "--port", String(port)],
+    {
+      cwd: webDir,
+      env: {
+        ...process.env,
+        NEXT_PUBLIC_API_URL: `http://127.0.0.1:${fastApiPort}`,
+      } as Record<string, string>,
+      stdio: ["ignore", "pipe", "pipe"],
+      shell: true,
+    }
+  );
+
+  child.stdout?.on("data", (data: Buffer) => {
+    console.log(`[nextjs] ${data.toString().trimEnd()}`);
+  });
+
+  child.stderr?.on("data", (data: Buffer) => {
+    // Next.js outputs normal startup info on stderr
+    console.log(`[nextjs] ${data.toString().trimEnd()}`);
+  });
+
+  child.on("error", (err) => {
+    console.error("[nextjs] Failed to start:", err.message);
+  });
+
+  return child;
 }
 
 // ---------------------------------------------------------------------------
@@ -329,11 +365,18 @@ async function startApp(): Promise<void> {
     return;
   }
 
-  // Load the Next.js frontend
-  const isDev = !app.isPackaged;
-  const frontendUrl = isDev
-    ? "http://localhost:3000"
-    : `http://localhost:3000`;
+  // Start the Next.js frontend
+  nextJsPort = await findAvailablePort(3000);
+  nextJsProcess = spawnNextJs(nextJsPort);
+
+  const frontendUrl = `http://localhost:${nextJsPort}`;
+
+  try {
+    await waitForHealth(frontendUrl, 60_000); // Next.js takes longer to start
+  } catch {
+    // If Next.js didn't start, try loading anyway — it may come up shortly
+    console.warn("[nextjs] Health check timed out, loading anyway...");
+  }
 
   mainWindow = createMainWindow(frontendUrl);
 }
@@ -355,13 +398,17 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", async () => {
-  await killChildProcess(fastApiProcess);
+  await Promise.all([
+    killChildProcess(fastApiProcess),
+    killChildProcess(nextJsProcess),
+  ]);
   fastApiProcess = null;
+  nextJsProcess = null;
 });
 
 app.on("activate", () => {
   if (mainWindow === null && !isFirstLaunch()) {
-    const frontendUrl = "http://localhost:3000";
+    const frontendUrl = `http://localhost:${nextJsPort}`;
     mainWindow = createMainWindow(frontendUrl);
   }
 });
