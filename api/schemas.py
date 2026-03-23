@@ -52,3 +52,15 @@ class LogMessage(BaseModel):
     stage: str
     message: str
     status: Literal["running", "done", "error"]
+
+
+class SettingsResponse(BaseModel):
+    hf_token_set: bool
+    anthropic_key_set: bool
+    ollama_host: str
+
+
+class SettingsUpdate(BaseModel):
+    hf_token: str | None = None
+    anthropic_key: str | None = None
+    ollama_host: str | None = None

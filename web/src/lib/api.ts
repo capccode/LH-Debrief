@@ -2,6 +2,31 @@ import type { Profile, Block, OllamaModel, JobStatus, LogMessage } from "./types
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+export interface Settings {
+  hf_token_set: boolean;
+  anthropic_key_set: boolean;
+  ollama_host: string;
+}
+
+export async function fetchSettings(): Promise<Settings> {
+  const res = await fetch(`${API_BASE}/settings`);
+  if (!res.ok) throw new Error("Failed to fetch settings");
+  return res.json();
+}
+
+export async function updateSettings(settings: {
+  hf_token?: string;
+  anthropic_key?: string;
+  ollama_host?: string;
+}): Promise<void> {
+  const res = await fetch(`${API_BASE}/settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(settings),
+  });
+  if (!res.ok) throw new Error("Failed to update settings");
+}
+
 export async function fetchProfiles(): Promise<Profile[]> {
   const res = await fetch(`${API_BASE}/profiles`);
   if (!res.ok) throw new Error("Failed to fetch profiles");

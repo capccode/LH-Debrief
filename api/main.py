@@ -28,6 +28,8 @@ from schemas import (
     JobStatus,
     OllamaModel,
     ProfileInfo,
+    SettingsResponse,
+    SettingsUpdate,
 )
 
 app = FastAPI(title="LH-Debrief API", version="0.1.0")
@@ -48,6 +50,47 @@ store = JobStore()
 
 @app.get("/health", response_model=HealthResponse)
 async def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+# --- Settings ---
+
+ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+
+
+@app.get("/settings", response_model=SettingsResponse)
+async def get_settings() -> dict:
+    return {
+        "hf_token_set": bool(os.getenv("HF_TOKEN")),
+        "anthropic_key_set": bool(os.getenv("ANTHROPIC_API_KEY")),
+        "ollama_host": os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+    }
+
+
+@app.put("/settings")
+async def update_settings(settings: SettingsUpdate) -> dict:
+    """Update .env file and live environment variables."""
+    env_lines: list[str] = []
+    if ENV_PATH.exists():
+        env_lines = ENV_PATH.read_text().splitlines()
+
+    def _set_env(key: str, value: str) -> None:
+        os.environ[key] = value
+        # Update or append in .env lines
+        for i, line in enumerate(env_lines):
+            if line.startswith(f"{key}=") or line.startswith(f"# {key}="):
+                env_lines[i] = f"{key}={value}"
+                return
+        env_lines.append(f"{key}={value}")
+
+    if settings.hf_token is not None:
+        _set_env("HF_TOKEN", settings.hf_token)
+    if settings.anthropic_key is not None:
+        _set_env("ANTHROPIC_API_KEY", settings.anthropic_key)
+    if settings.ollama_host is not None:
+        _set_env("OLLAMA_HOST", settings.ollama_host)
+
+    ENV_PATH.write_text("\n".join(env_lines) + "\n")
     return {"status": "ok"}
 
 

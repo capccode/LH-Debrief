@@ -10,6 +10,7 @@ import ProviderSelector from "@/components/ProviderSelector";
 import ProcessingLog from "@/components/ProcessingLog";
 import OutputTree from "@/components/OutputTree";
 import FileViewer from "@/components/FileViewer";
+import SettingsModal from "@/components/SettingsModal";
 
 export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -24,6 +25,7 @@ export default function Home() {
   const [viewingFile, setViewingFile] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -111,13 +113,29 @@ export default function Home() {
     <div className="flex h-screen flex-col">
       {/* Header — draggable titlebar region for Electron */}
       <header
-        className="shrink-0 border-b border-slate-800 px-6 py-3 text-center"
+        className="shrink-0 border-b border-slate-800 px-6 py-3 flex items-center"
         style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
       >
+        <div className="flex-1" />
         <h1 className="text-lg font-semibold text-slate-100 tracking-tight">
           LH-Debrief
         </h1>
+        <div className="flex-1 flex justify-end">
+          <button
+            onClick={() => setSettingsOpen(true)}
+            title="Settings"
+            className="text-slate-400 hover:text-slate-200 transition-colors"
+            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
       </header>
+
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
