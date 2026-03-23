@@ -47,7 +47,7 @@ The goal is to grow LH-Debrief thoughtfully, not just add features for the sake 
 
 3. Install dependencies:
     ```bash
-    pip install -e ".[dev]"
+    uv sync
     ```
 
 4. Implement your code with proper test cases
