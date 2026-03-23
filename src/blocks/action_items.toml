@@ -1,0 +1,13 @@
+name = "action_items"
+display_name = "Action Items"
+description = "Extract action items with owners and due dates"
+
+prompt = """
+Identify all action items discussed. For each, note who owns it
+and any mentioned deadline.
+"""
+
+json_example = """
+"action_items": [
+    {"owner": "Person name or role", "action": "What they need to do", "due": "Due date if mentioned, otherwise TBD"}
+]"""

@@ -1,0 +1,11 @@
+name = "todos"
+display_name = "Suggested To-Dos"
+description = "AI-generated suggestions inferred from context (not explicitly discussed)"
+
+prompt = """
+Generate actionable suggestions inferred from the conversation context.
+These are things NOT explicitly discussed as action items, but that would
+be valuable based on what was discussed. Frame as helpful suggestions.
+"""
+
+json_example = '"todos": ["Consider doing X based on the discussion about Y", "Schedule a follow-up about Z"]'

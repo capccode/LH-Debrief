@@ -1,0 +1,10 @@
+name = "follow_ups"
+display_name = "Follow-up Items"
+description = "Topics to revisit in future conversations"
+
+prompt = """
+Identify topics that were flagged for follow-up or that need to be
+revisited in future conversations.
+"""
+
+json_example = '"follow_ups": ["Topic to revisit later", "Another follow-up item"]'

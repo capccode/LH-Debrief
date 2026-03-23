@@ -1,0 +1,14 @@
+name = "participant_dynamics"
+display_name = "Participant Dynamics"
+description = "Communication styles, who drove what, tension points"
+
+prompt = """
+Analyze communication dynamics between participants. Note who drove
+the conversation, any tension points, communication styles, and
+how decisions were influenced.
+"""
+
+json_example = """
+"participant_dynamics": [
+    {"observation": "Description of a dynamic or pattern", "participants": "Who was involved", "significance": "Why this matters"}
+]"""

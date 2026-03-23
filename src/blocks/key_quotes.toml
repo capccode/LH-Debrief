@@ -1,0 +1,14 @@
+name = "key_quotes"
+display_name = "Key Quotes"
+description = "Exact noteworthy statements worth preserving"
+
+prompt = """
+Identify exact noteworthy statements that are worth preserving.
+These should be direct quotes that capture important moments,
+insights, or commitments.
+"""
+
+json_example = """
+"key_quotes": [
+    {"speaker": "Speaker name", "quote": "The exact words they said", "context": "Why this quote is significant"}
+]"""

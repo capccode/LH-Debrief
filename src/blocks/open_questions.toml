@@ -1,0 +1,10 @@
+name = "open_questions"
+display_name = "Open Questions"
+description = "Questions raised but not resolved"
+
+prompt = """
+Identify questions that were raised during the conversation but
+not fully answered or resolved.
+"""
+
+json_example = '"open_questions": ["Question that was raised but not answered", "Another unresolved question"]'

@@ -1,0 +1,14 @@
+name = "emotional_patterns"
+display_name = "Emotional Patterns"
+description = "Recurring emotional themes and shifts"
+
+prompt = """
+Track recurring emotional themes across the conversation. Note
+emotional shifts, patterns, and significant moments of emotional
+expression or change.
+"""
+
+json_example = """
+"emotional_patterns": [
+    {"pattern": "Description of emotional pattern", "moments": "When/where it appeared", "significance": "Why this matters therapeutically"}
+]"""

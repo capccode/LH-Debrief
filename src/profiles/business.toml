@@ -1,0 +1,20 @@
+name = "Business Meeting"
+description = "Corporate meeting analysis — decisions, accountability, stakeholder dynamics"
+
+context = """
+Analyze as a corporate meeting. Focus on deliverables, ownership,
+and stakeholder dynamics. Frame participant dynamics as actionable
+management insights.
+"""
+
+blocks = [
+    "session_summary",
+    "decisions",
+    "action_items",
+    "follow_ups",
+    "todos",
+    "key_concepts",
+    "open_questions",
+    "participant_dynamics",
+    "key_quotes",
+]

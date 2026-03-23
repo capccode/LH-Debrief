@@ -1,0 +1,14 @@
+name = "suggested_explorations"
+display_name = "Suggested Explorations"
+description = "Suggested lines of inquiry for future sessions"
+
+prompt = """
+Suggest lines of inquiry for future sessions. Frame these gently
+as explorations rather than prescriptions. Consider what themes
+might be worth revisiting or deepening.
+"""
+
+json_example = """
+"suggested_explorations": [
+    {"area": "Topic or theme to explore", "rationale": "Why this might be valuable", "approach": "How to approach it gently"}
+]"""

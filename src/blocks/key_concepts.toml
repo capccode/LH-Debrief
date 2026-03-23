@@ -1,0 +1,13 @@
+name = "key_concepts"
+display_name = "Key Concepts & Terms"
+description = "Terms, acronyms, and frameworks mentioned"
+
+prompt = """
+Identify key technical terms, acronyms, and frameworks mentioned
+in the conversation. Explain each in the context it was used.
+"""
+
+json_example = """
+"key_concepts": [
+    {"term": "Technical term or acronym", "explanation": "What it means in context"}
+]"""

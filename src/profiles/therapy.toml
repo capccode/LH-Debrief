@@ -1,0 +1,25 @@
+name = "Therapy Session"
+description = "Therapy session analysis — emotional patterns, relational dynamics, therapeutic frameworks"
+
+context = """
+Analyze as a therapy session. Focus on emotional undercurrents,
+relational patterns, and therapeutic frameworks. Frame suggestions
+gently as explorations, not prescriptions. Note moments of rupture
+and repair. Attend to how participants relate and connect in the space.
+"""
+
+blocks = [
+    "session_summary",
+    "decisions",
+    "action_items",
+    "follow_ups",
+    "todos",
+    "key_concepts",
+    "open_questions",
+    "participant_dynamics",
+    "key_quotes",
+    "emotional_patterns",
+    "relational_dynamics",
+    "therapeutic_frameworks",
+    "suggested_explorations",
+]

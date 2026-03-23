@@ -1,0 +1,10 @@
+name = "session_summary"
+display_name = "Session Summary"
+description = "2-3 sentence overview of the conversation"
+
+prompt = """
+Provide a concise 2-3 sentence summary of the main points and outcomes
+of this conversation.
+"""
+
+json_example = '"session_summary": "2-3 sentence summary of the main points and outcomes"'

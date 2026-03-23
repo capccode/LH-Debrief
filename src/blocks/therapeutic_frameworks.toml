@@ -1,0 +1,14 @@
+name = "therapeutic_frameworks"
+display_name = "Therapeutic Frameworks"
+description = "Relevant frameworks (attachment theory, IFS, etc.)"
+
+prompt = """
+Identify therapeutic frameworks relevant to what was discussed.
+This includes attachment theory, IFS, CBT, psychodynamic concepts,
+or any other frameworks that could inform understanding.
+"""
+
+json_example = """
+"therapeutic_frameworks": [
+    {"framework": "Framework name", "relevance": "How it applies to this session", "considerations": "What to keep in mind"}
+]"""

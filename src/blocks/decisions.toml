@@ -1,0 +1,10 @@
+name = "decisions"
+display_name = "Decisions Made"
+description = "Concrete decisions that were made"
+
+prompt = """
+Identify all concrete decisions that were made during this conversation.
+Only include things that were actually decided, not things still being discussed.
+"""
+
+json_example = '"decisions": ["Decision 1 that was made", "Decision 2 that was made"]'

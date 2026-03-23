@@ -1,0 +1,14 @@
+name = "relational_dynamics"
+display_name = "Relational Dynamics"
+description = "How participants relate, connect, and disconnect"
+
+prompt = """
+Analyze how participants relate to each other. Note moments of
+connection and disconnection, rupture and repair, and patterns
+in how they engage with each other.
+"""
+
+json_example = """
+"relational_dynamics": [
+    {"dynamic": "Description of relational pattern", "moments": "When it occurred", "significance": "Therapeutic relevance"}
+]"""
