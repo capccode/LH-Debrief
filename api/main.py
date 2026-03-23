@@ -7,8 +7,9 @@ import os
 import sys
 from pathlib import Path
 
-# Add src/ to path for profile/block loading
+# Add src/ and api/ to path so modules resolve when run via uvicorn
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from dotenv import load_dotenv
 
