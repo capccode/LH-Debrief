@@ -112,7 +112,7 @@ class TestOllamaModels:
         mock_resp.json.return_value = mock_data
         mock_resp.raise_for_status = MagicMock()
 
-        with patch("api.main.httpx.AsyncClient") as mock_cls:
+        with patch("main.httpx.AsyncClient") as mock_cls:
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -135,7 +135,7 @@ class TestCreateJob:
         files = {"file": ("test.wav", b"fake audio content", "audio/wav")}
         return client.post("/jobs", data=form_data, files=files)
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_creates_job_with_profile(self, mock_pipeline, client):
         resp = self._post_job(client, profile="business", provider="anthropic")
         assert resp.status_code == 200
@@ -143,14 +143,14 @@ class TestCreateJob:
         assert "job_id" in body
         assert body["status"] == "queued"
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_creates_job_with_blocks(self, mock_pipeline, client):
         resp = self._post_job(client, blocks="session_summary,decisions", provider="ollama")
         assert resp.status_code == 200
         body = resp.json()
         assert "job_id" in body
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_creates_job_without_profile_or_blocks(self, mock_pipeline, client):
         # Diarization + transcription only (no analysis)
         resp = self._post_job(client, provider="anthropic")
@@ -180,7 +180,7 @@ class TestCreateJob:
 
 
 class TestJobStatus:
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_returns_status_for_existing_job(self, mock_pipeline, client):
         create_resp = client.post(
             "/jobs",
@@ -204,7 +204,7 @@ class TestJobStatus:
 
 
 class TestJobOutput:
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_serves_existing_file(self, mock_pipeline, client, tmp_path):
         # Create a job
         create_resp = client.post(
@@ -232,7 +232,7 @@ class TestJobOutput:
         assert resp.headers["content-type"] == "text/markdown; charset=utf-8"
         assert "Test Briefing" in resp.text
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_content_types(self, mock_pipeline, client, tmp_path):
         create_resp = client.post(
             "/jobs",
@@ -262,7 +262,7 @@ class TestJobOutput:
         resp = client.get("/jobs/nonexistent/output/file.txt")
         assert resp.status_code == 404
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_returns_404_for_missing_file(self, mock_pipeline, client, tmp_path):
         create_resp = client.post(
             "/jobs",
@@ -283,7 +283,7 @@ class TestJobOutput:
         resp = client.get(f"/jobs/{job_id}/output/nonexistent.txt")
         assert resp.status_code == 404
 
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_blocks_path_traversal(self, mock_pipeline, client, tmp_path):
         create_resp = client.post(
             "/jobs",
@@ -309,7 +309,7 @@ class TestJobOutput:
 
 
 class TestJobLogsWebSocket:
-    @patch("api.jobs._run_pipeline_sync")
+    @patch("jobs._run_pipeline_sync")
     def test_receives_log_messages(self, mock_pipeline, client):
         # Create a job — the mocked pipeline still triggers run_pipeline's
         # async wrapper which adds a "Pipeline complete" log + sets completed
