@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv",
     "rich",
     "anthropic>=0.75.0",
+    "commitizen>=4.13.9",
 ]
 
 [project.optional-dependencies]
